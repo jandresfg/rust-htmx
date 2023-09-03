@@ -18,12 +18,10 @@ fn handle_connection(mut stream: TcpStream) {
 
     stream.read(&mut buffer).unwrap();
 
-    let get = b"GET / HTTP/1.1\r\n";
-
-    let (status_line, filename) = if buffer.starts_with(get) {
-        ("200 OK", "index.html")
-    } else {
-        ("404 NOT FOUND", "404.html")
+    let (status_line, filename) = match buffer {
+        s if s.starts_with(b"GET /frameworks") => ("200 OK", "frameworks.html"),
+        s if s.starts_with(b"GET /") => ("200 OK", "index.html"),
+        _ => ("404 NOT FOUND", "404.html"),
     };
 
     let contents = fs::read_to_string(filename).unwrap();
